@@ -1,5 +1,5 @@
 <html>
-  <body>
+  <head>
     <script src="https://molekule-stage.quiq-api.com/app/chat-ui/index.js" charset="UTF-8"></script>
     <style>
       body {
@@ -34,6 +34,9 @@
         font-family: serif; 
         font-size: 36px;
       }
+      .quiq-modal {
+        display: inline-block;
+      }
       .roundButton {
         border: thin solid darkgreen;
         border-radius: 20px;
@@ -47,7 +50,8 @@
         background-color: darkgreen;
       }
     </style>
-    
+  </head>
+  <body>
     <script>
       var chat = Quiq({
         pageConfigurationId: 'customer-service'
@@ -67,14 +71,15 @@
         <h1>
           Welcome! How can we help you?
         </h1>
-        <div class="roundButton green quiq-modal">
-          Start Chat >
+        <div class="quiq-modal">
+          <div class="roundButton green">
+            Start Chat >
+          </div>
         </div>
         <div class="roundButton">
           FAQs >
         </div>
       </div>
     </div>
-
   </body>
 </html>
