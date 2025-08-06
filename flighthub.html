@@ -12,8 +12,28 @@
 
 <script type="text/javascript">
   var conversation = Quiq.getConversation();
-  var ticketId = conversation.integrations[0].id;
-  document.body.innerHTML = ticketId;
+  document.body.innerHTML = JSON.stringify(conversation);
+
+  /*
+  async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
+    flex.Actions.addListener("afterAcceptTask", (payload) => {
+      try {
+        const { attributes } = payload. task;
+        const ticketNumber = attributes.servicedeskTicketNumber || "unknown";
+        
+        window.parent.postMessage(
+          {
+            type: "SERVICEDESK_OPEN_TICKET", 
+            ticketNumber, 
+            callSid: attributes.call_sid
+          },
+          "*" // You can replace * with your CRM domain for security
+      );
+    }  catch (err) {}
+        console.error ("Error posting OPEN_TICKET message:", err);
+    }
+  }
+  */
 </script>
   
 <body>
