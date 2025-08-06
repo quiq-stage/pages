@@ -1,0 +1,23 @@
+<!-- See https://developers.goquiq.com/docs/ui-extensions/ for more info -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>FlightHub RHS</title>
+</head>
+
+<script src="https://flighthub-stage.goquiq.com/app/ui-extensions/sdk.js"></script>
+
+<script type="text/javascript">
+  var conversation = Quiq.getConversation();
+  var ticketId = conversation.integrations[0].id;
+  document.body.innerHTML = ticketId;
+</script>
+  
+<body>
+
+
+</body>
+</html>
