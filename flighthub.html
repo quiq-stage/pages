@@ -11,8 +11,10 @@
 <script src="https://flighthub-stage.goquiq.com/app/ui-extensions/sdk.js"></script>
 
 <script type="text/javascript">
-  var conversation = Quiq.getConversation();
-  document.body.innerHTML = JSON.stringify(conversation);
+  Quiq.on("init", function (data) {
+    var conversation = Quiq.getConversation();
+    document.body.innerHTML = conversation.custom.servicedeskTicketNumber;
+  }
 
   /*
   async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
