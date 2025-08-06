@@ -13,7 +13,14 @@
 <script type="text/javascript">
   Quiq.on("init", function (data) {
     var conversation = Quiq.getConversation();
-    document.body.innerHTML = conversation.custom.servicedeskTicketNumber;
+    window.parent.postMessage(
+      {
+        type: "SERVICEDESK_OPEN_TICKET", 
+        conversation.custom.servicedeskTicketNumber, 
+        callSid: attributes.call_sid
+      },
+      "*" // You can replace * with your CRM domain for security
+    );
   });
 
   /*
@@ -30,7 +37,7 @@
             callSid: attributes.call_sid
           },
           "*" // You can replace * with your CRM domain for security
-      );
+        );
     }  catch (err) {}
         console.error ("Error posting OPEN_TICKET message:", err);
     }
