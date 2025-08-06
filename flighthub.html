@@ -13,10 +13,11 @@
 <script type="text/javascript">
   Quiq.on("init", function (data) {
     var conversation = Quiq.getConversation();
+    servicedeskTicketNumber = conversation.custom.servicedeskTicketNumber;
     window.parent.postMessage(
       {
         type: "SERVICEDESK_OPEN_TICKET", 
-        conversation.custom.servicedeskTicketNumber, 
+        servicedeskTicketNumber, 
         callSid: attributes.call_sid
       },
       "*" // You can replace * with your CRM domain for security
