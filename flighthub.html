@@ -17,8 +17,7 @@
     window.parent.postMessage(
       {
         type: "SERVICEDESK_OPEN_TICKET", 
-        servicedeskTicketNumber, 
-        callSid: attributes.call_sid
+        servicedeskTicketNumber
       },
       "*" // You can replace * with your CRM domain for security
     );
