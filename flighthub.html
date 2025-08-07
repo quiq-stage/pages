@@ -8,19 +8,24 @@
   <title>FlightHub RHS</title>
 </head>
 
-<script src="https://flighthub-stage.goquiq.com/app/ui-extensions/sdk.js"></script>
+<script src="https://flighthub.goquiq.com/app/ui-extensions/sdk.js"></script>
 
 <script type="text/javascript">
-  Quiq.init("https://flighthub-stage.goquiq.com");
+  Quiq.init("https://flighthub.goquiq.com");
+  var userId = Quiq.getUserId();
   var conversation = Quiq.getConversation();
   servicedeskTicketNumber = conversation.custom.servicedeskTicketNumber;
-  window.parent.postMessage(
-    {
-      type: "SERVICEDESK_OPEN_TICKET", 
-      servicedeskTicketNumber
-    },
-    "*" // You can replace * with your CRM domain for security
-  );
+  console.log(userId, servicedeskTicketNumber);
+
+  if (userID == "quiqhosting1") {
+    window.parent.postMessage(
+      {
+        type: "SERVICEDESK_OPEN_TICKET", 
+        servicedeskTicketNumber
+      },
+      "*" // You can replace * with your CRM domain for security
+    );
+  }
 
   /*
   async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
