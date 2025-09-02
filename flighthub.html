@@ -14,18 +14,20 @@
   Quiq.init("https://flighthub.goquiq.com");
   var userId = Quiq.getUserId();
   var conversation = Quiq.getConversation();
-  servicedeskTicketNumber = conversation.custom.servicedeskTicketNumber;
-  console.log(userId, servicedeskTicketNumber);
-
-  if (userID == "quiqhosting1") {
-    window.top.postMessage(
-      {
-        type: "SERVICEDESK_OPEN_TICKET", 
-        servicedeskTicketNumber
-      },
-      "*" // You can replace * with your CRM domain for security
-    );
-  }
+  setTimeout(function(){
+    servicedeskTicketNumber = conversation.custom.servicedeskTicketNumber;
+    console.log(userId, servicedeskTicketNumber);
+  
+    if (userID == "quiq-hosting1" || userID == "kristin.strickland_quiq.com#EXT#@flighthubgroup.onmicrosoft.com") {
+      window.top.postMessage(
+        {
+          type: "SERVICEDESK_OPEN_TICKET", 
+          servicedeskTicketNumber
+        },
+        "*" // You can replace * with your CRM domain for security
+      );
+    }
+  }, 2000);
 
   /*
   async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
