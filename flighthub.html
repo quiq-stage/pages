@@ -11,23 +11,25 @@
 <script src="https://flighthub.goquiq.com/app/ui-extensions/sdk.js"></script>
 
 <script type="text/javascript">
-  Quiq.init("https://flighthub.goquiq.com");
-  var userId = Quiq.getUserId();
-  var conversation = Quiq.getConversation();
   setTimeout(function(){
+    Quiq.init("https://flighthub.goquiq.com");
+    var userId = Quiq.getUserId();
+    var conversation = Quiq.getConversation();
     servicedeskTicketNumber = conversation.custom.servicedeskTicketNumber;
     console.log(userId, servicedeskTicketNumber);
   
-    if (userId == "quiq-hosting1" || userId == "kristin.strickland_quiq.com#EXT#@flighthubgroup.onmicrosoft.com") {
+    if (userId == "quiq-hosting1" || 
+        userId == "kristin.strickland_quiq.com#EXT#@flighthubgroup.onmicrosoft.com" || 
+        userId == "bettina.ooi@flighthub.com") {
       window.top.postMessage(
         {
           type: "SERVICEDESK_OPEN_TICKET", 
-          servicedeskTicketNumber
+          ticketNumber: servicedeskTicketNumber
         },
         "*" // You can replace * with your CRM domain for security
       );
     }
-  }, 2000);
+  }, 500);
 
   /*
   async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
