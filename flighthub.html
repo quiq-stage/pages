@@ -1,4 +1,3 @@
-<!-- See https://developers.goquiq.com/docs/ui-extensions/ for more info -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,45 +11,17 @@
 
 <script type="text/javascript">
   Quiq.init("https://flighthub.goquiq.com");
-  var userId = Quiq.getUserId();
   var conversation = Quiq.getConversation();
   servicedeskTicketNumber = conversation.custom.servicedeskTicketNumber;
-  console.log(userId, servicedeskTicketNumber);
-
-  if (userID == "quiqhosting1") {
-    window.parent.postMessage(
-      {
-        type: "SERVICEDESK_OPEN_TICKET", 
-        servicedeskTicketNumber
-      },
-      "*" // You can replace * with your CRM domain for security
-    );
-  }
-
-  /*
-  async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
-    flex.Actions.addListener("afterAcceptTask", (payload) => {
-      try {
-        const { attributes } = payload. task;
-        const ticketNumber = attributes.servicedeskTicketNumber || "unknown";
-        
-        window.parent.postMessage(
-          {
-            type: "SERVICEDESK_OPEN_TICKET", 
-            ticketNumber, 
-            callSid: attributes.call_sid
-          },
-          "*" // You can replace * with your CRM domain for security
-        );
-    }  catch (err) {}
-        console.error ("Error posting OPEN_TICKET message:", err);
-    }
-  }
-  */
+  window.parent.postMessage(
+    {
+      type: "SERVICEDESK_OPEN_TICKET", 
+      servicedeskTicketNumber
+    },
+    "*" 
+  );
 </script>
   
 <body>
-
-
 </body>
 </html>
