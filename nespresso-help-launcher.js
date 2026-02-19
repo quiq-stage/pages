@@ -54,7 +54,7 @@
 
       --pill-h: 44px;
       --pill-w: 44px;
-      --pill-open: 138px; /* was a bit too wide */
+      --pill-open: 190px;
     }
 
     .nesp-help-launcher,
@@ -73,78 +73,87 @@
       z-index: var(--nesp-z);
     }
 
-    /* Launcher pill — capsule reveal (not “circle stretch”) */
+    /* --- Pill (matches your screenshots) --- */
     .nesp-help-pill{
       height: var(--pill-h);
-      max-width: var(--pill-w);   /* closed */
-      width: auto;
+      width: var(--pill-w);              /* collapsed circle */
       border-radius: 999px;
-    
       background: #111;
       color: #fff;
-      border: 1px solid rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.10);
       box-shadow: var(--shadow-pill);
     
       display:flex;
       align-items:center;
-      justify-content:flex-start;
-      gap: 10px;
-    
-      padding: 4px 14px 4px 6px;  /* capsule padding like live */
+      overflow:hidden;
       cursor:pointer;
       user-select:none;
-      overflow:hidden;
     
-      transition: max-width 220ms cubic-bezier(.2,.8,.2,1);
+      padding: 0;                       /* important for perfect circle */
+      gap: 0;
+    
+      transition: width 260ms cubic-bezier(.2,.8,.2,1);
     }
     
-    /* icon sits in its own “buttony” circle so the capsule always feels intentional */
+    /* 44x44 fixed icon slot; centers icon when collapsed */
     .nesp-pill-icon-wrap{
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
+      width: var(--pill-w);
+      height: var(--pill-h);
+      flex: 0 0 var(--pill-w);
       display:grid;
       place-items:center;
-      flex: 0 0 36px;
-    
-      background: rgba(255,255,255,.08);
     }
     
-    /* ensure SVG is perfectly centered */
+    /* Ensure SVG centers perfectly */
     .nesp-pill-icon{
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       display:block;
-      line-height:0;
     }
     
-    /* text reveal */
+    /* Text stays “closed” until expanded */
     .nesp-pill-text{
       font-size: 14px;
       font-weight: 600;
       letter-spacing: .1px;
       white-space:nowrap;
+    
+      max-width: 0;                     /* prevents showing before expand */
       opacity: 0;
       transform: translateX(-6px);
-      transition: opacity 150ms ease, transform 180ms ease;
+    
+      overflow:hidden;
+    
+      /* fade happens AFTER width finishes */
+      transition: opacity 500ms ease, transform 500ms ease, max-width 0ms linear 260ms;
+      transition-delay: 260ms;           /* key: fade after expansion */
     }
     
-    /* hover open */
+    /* Expanded state (hover on desktop) */
     @media (hover:hover) and (pointer:fine){
-      .nesp-help-launcher:hover .nesp-help-pill{ max-width: var(--pill-open); }
-      .nesp-help-launcher:hover .nesp-pill-text{ opacity: 1; transform: translateX(0); }
+      .nesp-help-launcher:hover .nesp-help-pill{
+        width: var(--pill-open);
+        padding-right: 18px;             /* right breathing room */
+        gap: 8px;
+      }
+      .nesp-help-launcher:hover .nesp-pill-text{
+        max-width: 220px;
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
     
-    /* click-open state */
-    .nesp-help-pill.is-open{ max-width: var(--pill-open); }
-    .nesp-help-pill.is-open .nesp-pill-text{ opacity: 1; transform: translateX(0); }
-
-    @media (hover:hover) and (pointer:fine){
-      .nesp-help-launcher:hover .nesp-help-pill{ width: var(--pill-open); }
-      .nesp-help-launcher:hover .nesp-pill-text{ opacity: 1; transform: translateX(0); }
+    /* Expanded state (when opened by click) */
+    .nesp-help-pill.is-open{
+      width: var(--pill-open);
+      padding-right: 18px;
+      gap: 8px;
     }
-    .nesp-help-pill.is-open{ width: var(--pill-open); }
-    .nesp-help-pill.is-open .nesp-pill-text{ opacity: 1; transform: translateX(0); }
+    .nesp-help-pill.is-open .nesp-pill-text{
+      max-width: 220px;
+      opacity: 1;
+      transform: translateX(0);
+    }
 
     /* Popup */
     .nesp-help-popup{
@@ -445,11 +454,11 @@
     </div>
   `;
 
-  const launcher = document.createElement("div");
-  launcher.className = "nesp-help-launcher";
   launcher.innerHTML = `
     <div class="nesp-help-pill" role="button" tabindex="0" aria-label="Open help menu">
-      <span class="nesp-pill-icon-wrap">${ICON_CHAT_PILL}</span>
+      <span class="nesp-pill-icon-wrap">
+        ${ICON_CHAT_PILL}
+      </span>
       <span class="nesp-pill-text">Need help?</span>
     </div>
   `;
