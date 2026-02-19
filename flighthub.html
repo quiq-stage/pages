@@ -10,16 +10,46 @@
 <script src="https://flighthub.goquiq.com/app/ui-extensions/sdk.js"></script>
 
 <script type="text/javascript">
-  Quiq.init("https://flighthub.goquiq.com");
-  var conversation = Quiq.getConversation();
-  servicedeskTicketNumber = conversation.custom.servicedeskTicketNumber;
-  window.parent.postMessage(
-    {
-      type: "SERVICEDESK_OPEN_TICKET", 
-      servicedeskTicketNumber
-    },
-    "*" 
-  );
+  setTimeout(function(){
+    Quiq.init("https://flighthub.goquiq.com");
+    var userId = Quiq.getUserId();
+    var conversation = Quiq.getConversation();
+    servicedeskTicketNumber = conversation.custom.servicedeskTicketNumber;
+    console.log(userId, servicedeskTicketNumber);
+  
+    // if (userId == "quiq-hosting1" || 
+    //    userId == "kristin.strickland_quiq.com#EXT#@flighthubgroup.onmicrosoft.com" || 
+    //    userId == "bettina.ooi@flighthub.com") {
+      window.top.postMessage(
+        {
+          type: "SERVICEDESK_OPEN_TICKET", 
+          ticketNumber: servicedeskTicketNumber
+        },
+        "*" // You can replace * with your CRM domain for security
+      );
+    // }
+  }, 500);
+
+  /*
+  async init(flex: typeof Flex, manager: Flex.Manager): Promise<void> {
+    flex.Actions.addListener("afterAcceptTask", (payload) => {
+      try {
+        const { attributes } = payload. task;
+        const ticketNumber = attributes.servicedeskTicketNumber || "unknown";
+        
+        window.parent.postMessage(
+          {
+            type: "SERVICEDESK_OPEN_TICKET", 
+            ticketNumber, 
+            callSid: attributes.call_sid
+          },
+          "*" // You can replace * with your CRM domain for security
+        );
+    }  catch (err) {}
+        console.error ("Error posting OPEN_TICKET message:", err);
+    }
+  }
+  */
 </script>
   
 <body>
