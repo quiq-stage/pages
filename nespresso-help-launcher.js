@@ -2,11 +2,16 @@
   if (window.__NESP_HELP_LOADED__) return;
   window.__NESP_HELP_LOADED__ = true;
 
+  /* ----------------------------------
+     CONFIG (edit as needed)
+  ---------------------------------- */
   const CONFIG = {
     faqUrl: "https://www.nespresso.com/us/en/service-faq",
-    promoUrl: "https://www.nespresso.com/us/en/promo",
-    phone: "+18553255781",
+    machineUrl: "https://www.nespresso.com/us/en/machine-assistance", // adjust if you have a better URL
+    trackUrl: "https://www.nespresso.com/us/en/order-tracking",       // adjust if you have a better URL
     chatOpenSelector: ".quiq-web-chat-open",
+    phoneOriginal: "800-562-1465",
+    phoneVertuo: "877-964-6299",
   };
 
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -19,33 +24,54 @@
     }
   }
 
+  function telize(number) {
+    // keep digits + leading +
+    const cleaned = String(number).replace(/[^\d+]/g, "");
+    return cleaned.startsWith("+") ? cleaned : "+1" + cleaned.replace(/^1/, "");
+  }
+
   /* ----------------------------------
-     Styling closer to nespresso.com
+     Styles to match Nespresso look
   ---------------------------------- */
   const style = document.createElement("style");
   style.innerHTML = `
     :root{
       --nesp-z: 2147483000;
-      --nesp-font: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
 
-      --c-black:#111;
-      --c-white:#fff;
-      --c-text:#1a1a1a;
-      --c-sub:#6f6f6f;
+      --font: NespressoLucas,'Trebuchet MS',Helvetica,Arial,sans-serif;
 
-      --c-border: rgba(0,0,0,.10);
-      --c-divider: rgba(0,0,0,.08);
-      --c-hover: #f6f6f6;
+      --bg: #faf9f8;
+      --panel: #ffffff;
 
-      /* Nespresso-ish: smaller radius, softer shadow */
-      --radius-card: 12px;
-      --radius-pill: 999px;
+      --text: #1a1a1a;
+      --sub: #7b7b7b;
+      --label: #8b8b8b;
 
-      --shadow-card: 0 16px 40px rgba(0,0,0,.16);
+      --border: rgba(0,0,0,.10);
+      --divider: rgba(0,0,0,.10);
+      --hover: #f3f2f1;
+
+      --radius-card: 16px;
+      --radius-panel: 14px;
+
+      --shadow-card: 0 18px 55px rgba(0,0,0,.20);
       --shadow-pill: 0 10px 26px rgba(0,0,0,.18);
 
       --right: 22px;
       --bottom: 22px;
+
+      --pill-h: 44px;
+      --pill-w: 44px;
+      --pill-open: 148px; /* narrower than before */
+    }
+
+    /* Ensure our widget font wins */
+    .nesp-help-launcher,
+    .nesp-help-launcher *,
+    .nesp-help-popup,
+    .nesp-help-popup *{
+      font-family: var(--font) !important;
+      box-sizing: border-box;
     }
 
     /* Launcher */
@@ -54,17 +80,15 @@
       right: var(--right);
       bottom: var(--bottom);
       z-index: var(--nesp-z);
-      font-family: var(--nesp-font);
     }
 
-    /* Start as a circle, expand on hover */
     .nesp-help-pill{
-      height: 44px;
-      width: 44px;
-      border-radius: var(--radius-pill);
-      background: var(--c-black);
+      height: var(--pill-h);
+      width: var(--pill-w);
+      border-radius: 999px;
+      background: #111;
       color: #fff;
-      border: 0;
+      border: 1px solid rgba(255,255,255,.10);
       box-shadow: var(--shadow-pill);
 
       display:flex;
@@ -80,15 +104,16 @@
       transition: width 220ms cubic-bezier(.2,.8,.2,1);
     }
 
-    .nesp-help-pill .nesp-pill-icon{
+    .nesp-pill-icon{
       width: 20px;
       height: 20px;
       display:block;
-      flex:0 0 auto;
+      flex: 0 0 auto;
+      line-height: 0;
     }
 
-    .nesp-help-pill .nesp-pill-text{
-      font-size: 12.5px;
+    .nesp-pill-text{
+      font-size: 13px;
       font-weight: 600;
       letter-spacing: .1px;
       white-space:nowrap;
@@ -98,24 +123,23 @@
     }
 
     @media (hover:hover) and (pointer:fine){
-      .nesp-help-launcher:hover .nesp-help-pill{ width: 162px; }
+      .nesp-help-launcher:hover .nesp-help-pill{ width: var(--pill-open); }
       .nesp-help-launcher:hover .nesp-pill-text{ opacity: 1; transform: translateX(0); }
     }
-
-    .nesp-help-pill.is-open{ width: 162px; }
+    .nesp-help-pill.is-open{ width: var(--pill-open); }
     .nesp-help-pill.is-open .nesp-pill-text{ opacity: 1; transform: translateX(0); }
 
-    /* Popup card (no backdrop, like Nespresso) */
+    /* Popup card */
     .nesp-help-popup{
       position: fixed;
       right: var(--right);
       bottom: calc(var(--bottom) + 68px);
-      width: min(360px, 92vw);
+      width: min(392px, 92vw);
 
-      background: var(--c-white);
-      border: 1px solid var(--c-border);
+      background: var(--bg);
       border-radius: var(--radius-card);
       box-shadow: var(--shadow-card);
+      border: 1px solid rgba(0,0,0,.08);
 
       z-index: calc(var(--nesp-z) - 1);
 
@@ -132,110 +156,139 @@
       transform: translateY(0) scale(1);
     }
 
-    .nesp-help-popup *{ box-sizing:border-box; font-family: var(--nesp-font); }
-
-    .nesp-help-inner{ padding: 12px 12px 10px; color: var(--c-text); }
+    .nesp-help-inner{
+      padding: 16px;
+      color: var(--text);
+    }
 
     .nesp-help-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-      padding: 2px 2px 8px;
-    }
-
-    .nesp-help-title{
-      margin:0;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: .1px;
-      line-height: 1.2;
-    }
-
-    .nesp-help-close{
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid var(--c-border);
-      background: #fff;
-      color: #333;
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      user-select:none;
-      padding:0;
-      line-height:1;
-      font-size: 14px;
-    }
-    .nesp-help-close:hover{ background: var(--c-hover); }
-
-    .nesp-help-section{
-      margin: 10px 2px 6px;
-      font-size: 11.5px;
-      font-weight: 700;
-      color: #7a7a7a;
-      letter-spacing: .12px;
-      text-transform: none;
-    }
-
-    /* List style rows: white, separators, subtle hover */
-    .nesp-help-list{
-      border: 1px solid var(--c-divider);
-      border-radius: 10px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .nesp-help-item{
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap: 12px;
+      margin-bottom: 8px;
+    }
 
-      padding: 10px 12px;
+    .nesp-help-title{
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: .1px;
+      line-height: 1.15;
+    }
+
+    .nesp-help-close{
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: #fff;
+      color: #1a1a1a;
+
+      display:grid;
+      place-items:center;
+
+      cursor:pointer;
+      user-select:none;
+      padding: 0;
+      line-height: 1;
+      font-size: 16px;
+      flex: 0 0 auto;
+    }
+    .nesp-help-close:hover{ background: var(--hover); }
+
+    .nesp-help-section{
+      margin: 14px 2px 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--label);
+    }
+
+    .nesp-help-panel{
+      background: var(--panel);
+      border-radius: var(--radius-panel);
+      overflow: hidden;
+      border: 0;
+    }
+
+    .nesp-help-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 12px 14px;
       background: #fff;
       cursor:pointer;
       user-select:none;
     }
-    .nesp-help-item:hover{ background: var(--c-hover); }
-
     .nesp-help-item + .nesp-help-item{
-      border-top: 1px solid var(--c-divider);
+      border-top: 1px solid var(--divider);
     }
+    .nesp-help-item:hover{ background: var(--hover); }
 
-    .nesp-help-item-main{ min-width:0; }
-    .nesp-help-item-title{
-      margin:0;
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.25;
-      color: var(--c-text);
-    }
-    .nesp-help-item-sub{
-      margin: 4px 0 0;
-      font-size: 11.5px;
-      line-height: 1.35;
-      color: var(--c-sub);
-    }
-
-    .nesp-help-item-right{
-      flex:0 0 auto;
+    .nesp-help-left{
       display:flex;
-      align-items:center;
-      gap: 8px;
-      padding-top: 1px;
-      color: #333;
-      opacity: .9;
+      align-items:flex-start;
+      gap: 12px;
+      min-width: 0;
     }
 
     .nesp-help-icon{
-      width: 16px;
-      height: 16px;
+      width: 22px;
+      height: 22px;
+      flex: 0 0 22px;
       display:block;
+      color: #2b2b2b;
+      margin-top: 1px;
     }
+
+    .nesp-help-text{
+      min-width:0;
+    }
+
+    .nesp-help-item-title{
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.25;
+      color: var(--text);
+    }
+
+    .nesp-help-item-sub{
+      margin: 4px 0 0;
+      font-size: 13px;
+      line-height: 1.25;
+      color: var(--sub);
+    }
+
+    .nesp-help-right{
+      flex: 0 0 auto;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      color: #6f6f6f;
+    }
+
     .nesp-help-chev{
-      font-size: 18px;
+      font-size: 22px;
       line-height: 1;
+      transform: translateY(-1px);
+    }
+
+    /* Mobile behavior: <= 767px bottom-attached full width, height unchanged */
+    @media (max-width: 767px){
+      .nesp-help-popup{
+        left: 0;
+        right: 0;
+        width: 100vw;
+        bottom: 0;
+        border-radius: 16px 16px 0 0;
+        transform-origin: bottom center;
+      }
+      .nesp-help-launcher{
+        right: 16px;
+        bottom: 16px;
+      }
     }
 
     /* If Quiq chat opens, close our menu so it doesn't compete */
@@ -247,20 +300,48 @@
   `;
   document.head.appendChild(style);
 
-  const ICON_CHAT = `
+  /* ----------------------------------
+     Icons (outline style, left aligned)
+  ---------------------------------- */
+  const ICON_CHAT_PILL = `
     <svg class="nesp-pill-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-      <path d="M7.4 18.2 4.6 19.7l1.1-2.6A7.3 7.3 0 0 1 4 12.6C4 8.4 7.7 6 12.8 6c5.1 0 8.7 2.4 8.7 6.6s-3.6 6.6-8.7 6.6c-1.1 0-2.1-.1-3.1-.3l-2.3 1.1Z"
+      <path d="M7.6 18.2 4.6 19.7l1.1-2.6A7.3 7.3 0 0 1 4 12.6C4 8.4 7.7 6 12.8 6c5.1 0 8.7 2.4 8.7 6.6s-3.6 6.6-8.7 6.6c-1.1 0-2.1-.1-3.1-.3l-2.3 1.1Z"
             stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
       <path d="M9.4 12.6h.01M12.8 12.6h.01M16.2 12.6h.01"
             stroke="white" stroke-width="2.2" stroke-linecap="round"/>
     </svg>
   `;
 
-  const ICON_LINK = `
+  const ICON_INFO = `
     <svg class="nesp-help-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-      <path d="M9.5 14.5 14.5 9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M10 9H8a5 5 0 0 0 0 10h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M14 15h2a5 5 0 0 0 0-10h-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M12 10.6v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="12" cy="7.7" r="1.1" fill="currentColor"/>
+    </svg>
+  `;
+
+  const ICON_BOOK = `
+    <svg class="nesp-help-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+      <path d="M6 5.8h9.8c1.2 0 2.2 1 2.2 2.2V18.5c0 .9-.7 1.6-1.6 1.6H7.6c-.9 0-1.6-.7-1.6-1.6V5.8Z"
+            stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M6.2 16.8h10.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M9.2 5.8v11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+    </svg>
+  `;
+
+  const ICON_BOX = `
+    <svg class="nesp-help-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+      <path d="M4.8 8.6 12 4.8l7.2 3.8-7.2 3.8-7.2-3.8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M4.8 8.6V16L12 20l7.2-4V8.6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M12 12.4V20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  `;
+
+  const ICON_BUBBLE = `
+    <svg class="nesp-help-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+      <path d="M6.4 16.8 4.6 18l.7-1.8A7 7 0 0 1 4 12.7C4 9 7.1 6.8 11.2 6.8c4.1 0 7.2 2.2 7.2 5.9s-3.1 5.9-7.2 5.9c-.8 0-1.7-.1-2.4-.2l-2.4 1.2Z"
+            stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M8.6 12.6h.01M11.2 12.6h.01M13.8 12.6h.01" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
     </svg>
   `;
 
@@ -279,54 +360,76 @@
   popup.innerHTML = `
     <div class="nesp-help-inner" role="dialog" aria-modal="true" aria-label="Help menu">
       <div class="nesp-help-header">
-        <p class="nesp-help-title">How can we help you?</p>
+        <h3 class="nesp-help-title">How can we help you?</h3>
         <button class="nesp-help-close" type="button" aria-label="Close">×</button>
       </div>
 
-      <div class="nesp-help-section">Useful links</div>
-      <div class="nesp-help-list">
+      <div class="nesp-help-section">Useful links:</div>
+      <div class="nesp-help-panel">
         <div class="nesp-help-item" data-action="faq" role="button" tabindex="0">
-          <div class="nesp-help-item-main">
-            <p class="nesp-help-item-title">Visit our FAQs</p>
+          <div class="nesp-help-left">
+            ${ICON_INFO}
+            <div class="nesp-help-text">
+              <p class="nesp-help-item-title">Visit our FAQs</p>
+            </div>
           </div>
-          <div class="nesp-help-item-right">
-            ${ICON_LINK}
-            <span class="nesp-help-chev">›</span>
-          </div>
+          <div class="nesp-help-right"><span class="nesp-help-chev">›</span></div>
         </div>
 
-        <div class="nesp-help-item" data-action="promo" role="button" tabindex="0">
-          <div class="nesp-help-item-main">
-            <p class="nesp-help-item-title">Claim your machine promotion</p>
+        <div class="nesp-help-item" data-action="machine" role="button" tabindex="0">
+          <div class="nesp-help-left">
+            ${ICON_BOOK}
+            <div class="nesp-help-text">
+              <p class="nesp-help-item-title">Machine assistance</p>
+            </div>
           </div>
-          <div class="nesp-help-item-right">
-            ${ICON_LINK}
-            <span class="nesp-help-chev">›</span>
+          <div class="nesp-help-right"><span class="nesp-help-chev">›</span></div>
+        </div>
+
+        <div class="nesp-help-item" data-action="track" role="button" tabindex="0">
+          <div class="nesp-help-left">
+            ${ICON_BOX}
+            <div class="nesp-help-text">
+              <p class="nesp-help-item-title">Track your order</p>
+            </div>
           </div>
+          <div class="nesp-help-right"><span class="nesp-help-chev">›</span></div>
         </div>
       </div>
 
-      <div class="nesp-help-section">Contact options</div>
-      <div class="nesp-help-list">
+      <div class="nesp-help-section">Contact options:</div>
+      <div class="nesp-help-panel">
         <div class="nesp-help-item" data-action="chat" role="button" tabindex="0">
-          <div class="nesp-help-item-main">
-            <p class="nesp-help-item-title">Chat with Us</p>
-            <p class="nesp-help-item-sub">Mon–Fri 8am–10pm ET, Sat–Sun 8am–8pm ET</p>
+          <div class="nesp-help-left">
+            ${ICON_BUBBLE}
+            <div class="nesp-help-text">
+              <p class="nesp-help-item-title">Chat with us</p>
+              <p class="nesp-help-item-sub">Our agents are available everyday from 8 AM to 10 PM ET.</p>
+            </div>
           </div>
-          <div class="nesp-help-item-right">
-            <span class="nesp-help-chev">›</span>
-          </div>
+          <div class="nesp-help-right"><span class="nesp-help-chev">›</span></div>
         </div>
 
-        <div class="nesp-help-item" data-action="phone" role="button" tabindex="0">
-          <div class="nesp-help-item-main">
-            <p class="nesp-help-item-title">Technical support</p>
-            <p class="nesp-help-item-sub">Call 1-855-325-5781</p>
-          </div>
-          <div class="nesp-help-item-right">
+        <div class="nesp-help-item" data-action="phoneOriginal" role="button" tabindex="0">
+          <div class="nesp-help-left">
             ${ICON_PHONE}
-            <span class="nesp-help-chev">›</span>
+            <div class="nesp-help-text">
+              <p class="nesp-help-item-title">Technical support for Original</p>
+              <p class="nesp-help-item-sub">${CONFIG.phoneOriginal} Available 24/7</p>
+            </div>
           </div>
+          <div class="nesp-help-right"><span class="nesp-help-chev">›</span></div>
+        </div>
+
+        <div class="nesp-help-item" data-action="phoneVertuo" role="button" tabindex="0">
+          <div class="nesp-help-left">
+            ${ICON_PHONE}
+            <div class="nesp-help-text">
+              <p class="nesp-help-item-title">Technical support for Vertuo</p>
+              <p class="nesp-help-item-sub">${CONFIG.phoneVertuo} Available 24/7</p>
+            </div>
+          </div>
+          <div class="nesp-help-right"><span class="nesp-help-chev">›</span></div>
         </div>
       </div>
     </div>
@@ -336,7 +439,7 @@
   launcher.className = "nesp-help-launcher";
   launcher.innerHTML = `
     <div class="nesp-help-pill" role="button" tabindex="0" aria-label="Open help menu">
-      ${ICON_CHAT}
+      ${ICON_CHAT_PILL}
       <div class="nesp-pill-text">Need help?</div>
     </div>
   `;
@@ -356,10 +459,12 @@
     pill.classList.remove("is-open");
   }
   function togglePopup() {
-    if (popup.classList.contains("is-open")) closePopup();
-    else openPopup();
+    popup.classList.contains("is-open") ? closePopup() : openPopup();
   }
 
+  /* ----------------------------------
+     Events
+  ---------------------------------- */
   launcher.addEventListener("click", (e) => {
     e.stopPropagation();
     togglePopup();
@@ -385,8 +490,10 @@
     const action = item.getAttribute("data-action");
 
     if (action === "faq") safeOpen(CONFIG.faqUrl);
-    else if (action === "promo") safeOpen(CONFIG.promoUrl);
-    else if (action === "phone") window.location.href = "tel:" + CONFIG.phone;
+    else if (action === "machine") safeOpen(CONFIG.machineUrl);
+    else if (action === "track") safeOpen(CONFIG.trackUrl);
+    else if (action === "phoneOriginal") window.location.href = "tel:" + telize(CONFIG.phoneOriginal);
+    else if (action === "phoneVertuo") window.location.href = "tel:" + telize(CONFIG.phoneVertuo);
     else if (action === "chat") {
       try {
         if (window.chat && typeof window.chat.show === "function") window.chat.show();
@@ -397,11 +504,11 @@
     closePopup();
   });
 
-  // close on outside click (no backdrop, like nespresso.com)
+  // Close on outside click (no backdrop, like nespresso.com)
   document.addEventListener("click", () => closePopup());
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePopup(); });
 
-  // auto-close if Quiq chat opens
+  // Auto-close if Quiq chat opens
   const mo = new MutationObserver(() => {
     if (document.querySelector(CONFIG.chatOpenSelector)) closePopup();
   });
