@@ -73,47 +73,71 @@
       z-index: var(--nesp-z);
     }
 
+    /* Launcher pill — capsule reveal (not “circle stretch”) */
     .nesp-help-pill{
       height: var(--pill-h);
-      width: var(--pill-w);
+      max-width: var(--pill-w);   /* closed */
+      width: auto;
       border-radius: 999px;
+    
       background: #111;
       color: #fff;
-      border: 1px solid rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.12);
       box-shadow: var(--shadow-pill);
-
+    
       display:flex;
       align-items:center;
       justify-content:flex-start;
-      gap: 8px;
-
-      padding: 0 12px 0 12px; /* reduce to match live */
+      gap: 10px;
+    
+      padding: 4px 14px 4px 6px;  /* capsule padding like live */
       cursor:pointer;
       user-select:none;
       overflow:hidden;
-
-      transition: width 220ms cubic-bezier(.2,.8,.2,1);
+    
+      transition: max-width 220ms cubic-bezier(.2,.8,.2,1);
     }
-
+    
+    /* icon sits in its own “buttony” circle so the capsule always feels intentional */
+    .nesp-pill-icon-wrap{
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      display:grid;
+      place-items:center;
+      flex: 0 0 36px;
+    
+      background: rgba(255,255,255,.08);
+    }
+    
+    /* ensure SVG is perfectly centered */
     .nesp-pill-icon{
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       display:block;
-      flex: 0 0 auto;
-      position: relative;
-      top: 0px; /* adjust if needed, but this centers in your video */
+      line-height:0;
     }
-
+    
+    /* text reveal */
     .nesp-pill-text{
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: .1px;
       white-space:nowrap;
       opacity: 0;
       transform: translateX(-6px);
-      line-height: 1;
       transition: opacity 150ms ease, transform 180ms ease;
     }
+    
+    /* hover open */
+    @media (hover:hover) and (pointer:fine){
+      .nesp-help-launcher:hover .nesp-help-pill{ max-width: var(--pill-open); }
+      .nesp-help-launcher:hover .nesp-pill-text{ opacity: 1; transform: translateX(0); }
+    }
+    
+    /* click-open state */
+    .nesp-help-pill.is-open{ max-width: var(--pill-open); }
+    .nesp-help-pill.is-open .nesp-pill-text{ opacity: 1; transform: translateX(0); }
 
     @media (hover:hover) and (pointer:fine){
       .nesp-help-launcher:hover .nesp-help-pill{ width: var(--pill-open); }
@@ -425,8 +449,8 @@
   launcher.className = "nesp-help-launcher";
   launcher.innerHTML = `
     <div class="nesp-help-pill" role="button" tabindex="0" aria-label="Open help menu">
-      ${ICON_CHAT_PILL}
-      <div class="nesp-pill-text">Need help?</div>
+      <span class="nesp-pill-icon-wrap">${ICON_CHAT_PILL}</span>
+      <span class="nesp-pill-text">Need help?</span>
     </div>
   `;
 
