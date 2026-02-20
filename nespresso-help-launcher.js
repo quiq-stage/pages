@@ -23,6 +23,9 @@
     return cleaned.startsWith("+") ? cleaned : "+1" + cleaned.replace(/^1/, "");
   }
 
+  /* ----------------------------------
+     Styles
+  ---------------------------------- */
   const style = document.createElement("style");
   style.innerHTML = `
     :root{
@@ -36,16 +39,13 @@
       --sub: #7b7b7b;
       --label: #8b8b8b;
 
-      /* lighter borders/dividers like live */
       --border: rgba(0,0,0,.08);
       --divider: rgba(0,0,0,.08);
       --hover: #f3f2f1;
 
-      /* live looks a touch rounder than ours */
       --radius-card: 18px;
       --radius-panel: 16px;
 
-      /* soften the “modal” feel */
       --shadow-card: 0 14px 42px rgba(0,0,0,.18);
       --shadow-pill: 0 10px 24px rgba(0,0,0,.18);
 
@@ -55,6 +55,8 @@
       --pill-h: 44px;
       --pill-w: 44px;
       --pill-open: 190px;
+
+      --pill-expand-ms: 260ms; /* keep in sync with text delay */
     }
 
     .nesp-help-launcher,
@@ -65,7 +67,7 @@
       box-sizing: border-box;
     }
 
-    /* Launcher */
+    /* Launcher container */
     .nesp-help-launcher{
       position: fixed;
       right: var(--right);
@@ -82,20 +84,22 @@
       color: #fff;
       border: 1px solid rgba(255,255,255,.10);
       box-shadow: var(--shadow-pill);
-    
+
       display:flex;
       align-items:center;
       overflow:hidden;
       cursor:pointer;
       user-select:none;
-    
-      padding: 0;                       /* important for perfect circle */
+
+      padding: 0;                       /* perfect circle */
       gap: 0;
-    
-      transition: width 260ms cubic-bezier(.2,.8,.2,1);
+
+      transition: width var(--pill-expand-ms) cubic-bezier(.2,.8,.2,1),
+                  padding-right var(--pill-expand-ms) cubic-bezier(.2,.8,.2,1),
+                  gap var(--pill-expand-ms) cubic-bezier(.2,.8,.2,1);
     }
-    
-    /* 44x44 fixed icon slot; centers icon when collapsed */
+
+    /* Fixed icon slot keeps icon centered in collapsed state */
     .nesp-pill-icon-wrap{
       width: var(--pill-w);
       height: var(--pill-h);
@@ -103,37 +107,36 @@
       display:grid;
       place-items:center;
     }
-    
-    /* Ensure SVG centers perfectly */
+
     .nesp-pill-icon{
       width: 20px;
       height: 20px;
       display:block;
     }
-    
-    /* Text stays “closed” until expanded */
+
     .nesp-pill-text{
       font-size: 14px;
       font-weight: 600;
       letter-spacing: .1px;
       white-space:nowrap;
-    
-      max-width: 0;                     /* prevents showing before expand */
+
+      max-width: 0;
       opacity: 0;
       transform: translateX(-6px);
-    
       overflow:hidden;
-    
-      /* fade happens AFTER width finishes */
-      transition: opacity 500ms ease, transform 500ms ease, max-width 0ms linear 260ms;
-      transition-delay: 260ms;           /* key: fade after expansion */
+
+      /* fade after expand completes */
+      transition:
+        opacity 520ms ease,
+        transform 520ms ease,
+        max-width 0ms linear var(--pill-expand-ms);
+      transition-delay: var(--pill-expand-ms);
     }
-    
-    /* Expanded state (hover on desktop) */
+
     @media (hover:hover) and (pointer:fine){
       .nesp-help-launcher:hover .nesp-help-pill{
         width: var(--pill-open);
-        padding-right: 18px;             /* right breathing room */
+        padding-right: 18px;
         gap: 8px;
       }
       .nesp-help-launcher:hover .nesp-pill-text{
@@ -142,8 +145,7 @@
         transform: translateX(0);
       }
     }
-    
-    /* Expanded state (when opened by click) */
+
     .nesp-help-pill.is-open{
       width: var(--pill-open);
       padding-right: 18px;
@@ -175,7 +177,6 @@
       transform-origin: bottom right;
       transition: opacity 160ms ease, transform 200ms cubic-bezier(.2,.8,.2,1);
     }
-
     .nesp-help-popup.is-open{
       opacity: 1;
       pointer-events: auto;
@@ -183,7 +184,7 @@
     }
 
     .nesp-help-inner{
-      padding: 18px; /* live has a little more breathing room */
+      padding: 18px;
       color: var(--text);
     }
 
@@ -228,7 +229,6 @@
       color: var(--label);
     }
 
-    /* White panels on #faf9f8 like live */
     .nesp-help-panel{
       background: var(--panel);
       border-radius: var(--radius-panel);
@@ -263,11 +263,10 @@
       display:block;
       color: #2b2b2b;
       position: relative;
-      top: 1px; /* helps match vertical alignment in live */
+      top: 1px;
     }
 
     .nesp-help-text{ min-width:0; }
-
     .nesp-help-item-title{
       margin: 0;
       font-size: 14px;
@@ -275,7 +274,6 @@
       line-height: 1.25;
       color: var(--text);
     }
-
     .nesp-help-item-sub{
       margin: 4px 0 0;
       font-size: 13px;
@@ -288,17 +286,15 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      width: 22px; /* consistent right column like live */
+      width: 22px;
       color: #6f6f6f;
     }
-
     .nesp-help-chev{
       width: 16px;
       height: 16px;
       display:block;
     }
 
-    /* Mobile: <= 767px, bottom-attached full width, height unchanged */
     @media (max-width: 767px){
       .nesp-help-popup{
         left: 0;
@@ -314,7 +310,6 @@
       }
     }
 
-    /* If Quiq chat opens, hide ours */
     ${CONFIG.chatOpenSelector} .nesp-help-popup{
       opacity:0 !important;
       pointer-events:none !important;
@@ -323,7 +318,9 @@
   `;
   document.head.appendChild(style);
 
-  /* Icons */
+  /* ----------------------------------
+     Icons
+  ---------------------------------- */
   const ICON_CHAT_PILL = `
     <svg class="nesp-pill-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
       <path d="M7.6 18.2 4.6 19.7l1.1-2.6A7.3 7.3 0 0 1 4 12.6C4 8.4 7.7 6 12.8 6c5.1 0 8.7 2.4 8.7 6.6s-3.6 6.6-8.7 6.6c-1.1 0-2.1-.1-3.1-.3l-2.3 1.1Z"
@@ -379,7 +376,9 @@
     </svg>
   `;
 
-  /* DOM */
+  /* ----------------------------------
+     DOM (launcher is defined before use)
+  ---------------------------------- */
   const popup = document.createElement("div");
   popup.className = "nesp-help-popup";
   popup.innerHTML = `
@@ -392,26 +391,15 @@
       <div class="nesp-help-section">Useful links:</div>
       <div class="nesp-help-panel">
         <div class="nesp-help-item" data-action="faq" role="button" tabindex="0">
-          <div class="nesp-help-left">
-            ${ICON_INFO}
-            <div class="nesp-help-text"><p class="nesp-help-item-title">Visit our FAQs</p></div>
-          </div>
+          <div class="nesp-help-left">${ICON_INFO}<div class="nesp-help-text"><p class="nesp-help-item-title">Visit our FAQs</p></div></div>
           <div class="nesp-help-right">${CHEV}</div>
         </div>
-
         <div class="nesp-help-item" data-action="machine" role="button" tabindex="0">
-          <div class="nesp-help-left">
-            ${ICON_BOOK}
-            <div class="nesp-help-text"><p class="nesp-help-item-title">Machine assistance</p></div>
-          </div>
+          <div class="nesp-help-left">${ICON_BOOK}<div class="nesp-help-text"><p class="nesp-help-item-title">Machine assistance</p></div></div>
           <div class="nesp-help-right">${CHEV}</div>
         </div>
-
         <div class="nesp-help-item" data-action="track" role="button" tabindex="0">
-          <div class="nesp-help-left">
-            ${ICON_BOX}
-            <div class="nesp-help-text"><p class="nesp-help-item-title">Track your order</p></div>
-          </div>
+          <div class="nesp-help-left">${ICON_BOX}<div class="nesp-help-text"><p class="nesp-help-item-title">Track your order</p></div></div>
           <div class="nesp-help-right">${CHEV}</div>
         </div>
       </div>
@@ -419,46 +407,35 @@
       <div class="nesp-help-section">Contact options:</div>
       <div class="nesp-help-panel">
         <div class="nesp-help-item" data-action="chat" role="button" tabindex="0">
-          <div class="nesp-help-left">
-            ${ICON_BUBBLE}
-            <div class="nesp-help-text">
-              <p class="nesp-help-item-title">Chat with us</p>
-              <p class="nesp-help-item-sub">Our agents are available everyday from 8 AM to 10 PM ET.</p>
-            </div>
-          </div>
+          <div class="nesp-help-left">${ICON_BUBBLE}<div class="nesp-help-text">
+            <p class="nesp-help-item-title">Chat with us</p>
+            <p class="nesp-help-item-sub">Our agents are available everyday from 8 AM to 10 PM ET.</p>
+          </div></div>
           <div class="nesp-help-right">${CHEV}</div>
         </div>
-
         <div class="nesp-help-item" data-action="phoneOriginal" role="button" tabindex="0">
-          <div class="nesp-help-left">
-            ${ICON_PHONE}
-            <div class="nesp-help-text">
-              <p class="nesp-help-item-title">Technical support for Original</p>
-              <p class="nesp-help-item-sub">${CONFIG.phoneOriginal} Available 24/7</p>
-            </div>
-          </div>
+          <div class="nesp-help-left">${ICON_PHONE}<div class="nesp-help-text">
+            <p class="nesp-help-item-title">Technical support for Original</p>
+            <p class="nesp-help-item-sub">${CONFIG.phoneOriginal} Available 24/7</p>
+          </div></div>
           <div class="nesp-help-right">${CHEV}</div>
         </div>
-
         <div class="nesp-help-item" data-action="phoneVertuo" role="button" tabindex="0">
-          <div class="nesp-help-left">
-            ${ICON_PHONE}
-            <div class="nesp-help-text">
-              <p class="nesp-help-item-title">Technical support for Vertuo</p>
-              <p class="nesp-help-item-sub">${CONFIG.phoneVertuo} Available 24/7</p>
-            </div>
-          </div>
+          <div class="nesp-help-left">${ICON_PHONE}<div class="nesp-help-text">
+            <p class="nesp-help-item-title">Technical support for Vertuo</p>
+            <p class="nesp-help-item-sub">${CONFIG.phoneVertuo} Available 24/7</p>
+          </div></div>
           <div class="nesp-help-right">${CHEV}</div>
         </div>
       </div>
     </div>
   `;
 
+  const launcher = document.createElement("div");
+  launcher.className = "nesp-help-launcher";
   launcher.innerHTML = `
     <div class="nesp-help-pill" role="button" tabindex="0" aria-label="Open help menu">
-      <span class="nesp-pill-icon-wrap">
-        ${ICON_CHAT_PILL}
-      </span>
+      <span class="nesp-pill-icon-wrap">${ICON_CHAT_PILL}</span>
       <span class="nesp-pill-text">Need help?</span>
     </div>
   `;
@@ -477,7 +454,6 @@
   launcher.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); togglePopup(); }
   });
-
   closeBtn.addEventListener("click", (e) => { e.stopPropagation(); closePopup(); });
 
   popup.addEventListener("click", (e) => {
