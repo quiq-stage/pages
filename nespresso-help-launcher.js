@@ -28,6 +28,14 @@
   ---------------------------------- */
   const style = document.createElement("style");
   style.innerHTML = `
+
+    @font-face {
+      font-family: 'NespressoLucas'; /* Name to be used in other CSS rules */
+      src: url('NespressoLucas.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+    
     :root{
       --nesp-z: 2147483000;
       --font: NespressoLucas,'Trebuchet MS',Helvetica,Arial,sans-serif;
