@@ -303,6 +303,79 @@
       '#' + CONFIG.ids.panel + '{right:12px;bottom:86px;width:calc(100vw - 24px);padding:18px 14px 14px;}',
       '#' + CONFIG.ids.launcher + '{right:12px;bottom:12px;}',
       '.nesp-help-chat-row .nesp-help-row-meta,.nesp-help-phone-row .nesp-help-row-meta{max-width:none;}',
+      '}',
+
+      'id="nesp-polish-pass"',
+      '/* === POLISH PASS (Premium + Interaction) === */',
+      
+      '#' + CONFIG.ids.panel + '{',
+      'background:#ece9e6;',
+      'box-shadow:0 18px 40px rgba(0,0,0,.18),0 1px 0 rgba(255,255,255,.35) inset;',
+      '}',
+      
+      '.nesp-help-group{',
+      'background:#f5f3f1;',
+      'box-shadow:0 1px 0 rgba(255,255,255,.55) inset;',
+      '}',
+      
+      '.nesp-help-icon-wrap{',
+      'width:28px;',
+      'min-width:28px;',
+      'height:28px;',
+      'border-radius:999px;',
+      'background:rgba(255,255,255,.6);',
+      'margin-top:0;',
+      '}',
+      
+      '.nesp-help-row{',
+      'transition:background 160ms ease,transform 160ms ease,box-shadow 160ms ease;',
+      '}',
+      
+      '.nesp-help-row:hover{',
+      'background:#f0ece8;',
+      'transform:translateY(-1px);',
+      'box-shadow:0 1px 0 rgba(255,255,255,.55) inset;',
+      '}',
+      
+      '.nesp-help-row:hover .nesp-help-chevron{',
+      'color:#555;',
+      '}',
+      
+      '#' + CONFIG.ids.pill + '{',
+      'border:1px solid rgba(255,255,255,.22);',
+      'box-shadow:0 10px 24px rgba(0,0,0,.18),0 1px 0 rgba(255,255,255,.14) inset;',
+      'transition:width 280ms cubic-bezier(.2,.8,.2,1),padding 280ms cubic-bezier(.2,.8,.2,1),gap 280ms cubic-bezier(.2,.8,.2,1),box-shadow 180ms ease;',
+      '}',
+      
+      '.nesp-help-launcher-icon{',
+      'margin-left:1px;',
+      '}',
+      
+      '.nesp-help-section:last-of-type .nesp-help-group{',
+      'padding:14px 10px;',
+      '}',
+      
+      '.nesp-help-chat-row{',
+      'background:rgba(255,255,255,.25);',
+      '}',
+      
+      '.nesp-help-chat-row .nesp-help-row-title{',
+      'font-weight:600;',
+      '}',
+      
+      '.nesp-help-section{',
+      'opacity:.96;',
+      'transform:translateY(4px);',
+      'transition:opacity 220ms ease,transform 220ms ease;',
+      '}',
+      
+      '#' + CONFIG.ids.panel + '.is-open .nesp-help-section{',
+      'opacity:1;',
+      'transform:translateY(0);',
+      '}',
+      
+      '#' + CONFIG.ids.panel + ' .nesp-help-section:nth-of-type(2){',
+      'transition-delay:30ms;',
       '}'
     ].join('');
 
