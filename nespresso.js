@@ -359,10 +359,6 @@
       'background:rgba(255,255,255,.25);',
       '}',
       
-      '.nesp-help-chat-row .nesp-help-row-title{',
-      'font-weight:600;',
-      '}',
-      
       '.nesp-help-section{',
       'opacity:.96;',
       'transform:translateY(4px);',
@@ -376,7 +372,32 @@
       
       '#' + CONFIG.ids.panel + ' .nesp-help-section:nth-of-type(2){',
       'transition-delay:30ms;',
-      '}'
+      '}',
+
+      '/* === CONTACT TYPOGRAPHY ALIGNMENT === */',
+      
+      '.nesp-help-chat-row .nesp-help-row-title,',
+      '.nesp-help-phone-row .nesp-help-row-title{',
+      'font-size:14px;',
+      'line-height:1.3;',
+      'font-weight:550;',
+      'letter-spacing:0;',
+      'color:#222;',
+      '}',
+      
+      '.nesp-help-chat-row .nesp-help-row-meta,',
+      '.nesp-help-phone-row .nesp-help-row-meta{',
+      'font-size:11px;',
+      'line-height:1.5;',
+      'letter-spacing:0.1px;',
+      'color:#727272;',
+      'max-width:245px;',
+      '}',
+      
+      '.nesp-help-chat-row .nesp-help-copy,',
+      '.nesp-help-phone-row .nesp-help-copy{',
+      'text-align:left;',
+      '}',
     ].join('');
 
     document.head.appendChild(style);
