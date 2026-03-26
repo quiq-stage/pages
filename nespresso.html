@@ -1,8 +1,311 @@
-<script src="https://dixie.quiq-api.com/app/chat-ui/index.js" charset="UTF-8"></script>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Nespresso</title>
+</head>
+<body>
+
 <script>
-  var chat = Quiq({
-    pageConfigurationId: 'nespresso'
-  });
+  (function () {
+    'use strict';
+  
+    var CONFIG = {
+      quiqScriptSrc: 'https://dixie.quiq-api.com/app/chat-ui/index.js',
+      pageConfigurationId: 'nespresso',
+  
+      labels: {
+        launcher: 'Need help?',
+        heading: 'How can we help?',
+        faq: 'FAQs',
+        promo: 'Current promotions',
+        phone: 'Technical support',
+        chat: 'Chat with us'
+      },
+  
+      links: {
+        faq: 'https://www.nespresso.com/ca/en/service-faq',
+        promo: 'https://www.nespresso.com/ca/en/promo',
+        phone: '18553255781'
+      },
+  
+      selectors: {
+        mountId: 'nesp-help-root',
+        panelId: 'nesp-help-panel',
+        launcherId: 'nesp-help-launcher',
+        chatButtonId: 'nesp-open-chat'
+      }
+    };
+  
+    function ready(fn) {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', fn);
+      } else {
+        fn();
+      }
+    }
+  
+    function loadScript(src, callback) {
+      if (window.Quiq) {
+        callback();
+        return;
+      }
+  
+      var existing = document.querySelector('script[data-nesp-quiq-loader="true"]');
+      if (existing) {
+        existing.addEventListener('load', callback, { once: true });
+        return;
+      }
+  
+      var script = document.createElement('script');
+      script.src = src;
+      script.charset = 'UTF-8';
+      script.async = true;
+      script.setAttribute('data-nesp-quiq-loader', 'true');
+      script.onload = callback;
+      script.onerror = function () {
+        console.error('[Nespresso Launcher] Failed to load Quiq script:', src);
+      };
+      document.head.appendChild(script);
+    }
+  
+    function injectStyles() {
+      if (document.getElementById('nesp-help-styles')) return;
+  
+      var style = document.createElement('style');
+      style.id = 'nesp-help-styles';
+      style.textContent = [
+        '#nesp-help-root{',
+        'position:fixed;',
+        'right:24px;',
+        'bottom:24px;',
+        'z-index:2147483000;',
+        'font-family:Arial,sans-serif;',
+        'color:#1f1f1f;',
+        '}',
+  
+        '#nesp-help-panel{',
+        'position:absolute;',
+        'right:0;',
+        'bottom:72px;',
+        'width:320px;',
+        'background:#fff;',
+        'border:1px solid #d9d4cc;',
+        'border-radius:16px;',
+        'box-shadow:0 14px 34px rgba(0,0,0,.18);',
+        'padding:16px;',
+        'opacity:0;',
+        'visibility:hidden;',
+        'transform:translateY(10px);',
+        'transition:opacity .18s ease, transform .18s ease, visibility .18s ease;',
+        'pointer-events:none;',
+        'box-sizing:border-box;',
+        '}',
+  
+        '#nesp-help-panel.is-open{',
+        'opacity:1;',
+        'visibility:visible;',
+        'transform:translateY(0);',
+        'pointer-events:auto;',
+        '}',
+  
+        '#nesp-help-heading{',
+        'margin:0 0 12px;',
+        'font-size:16px;',
+        'font-weight:700;',
+        'line-height:1.3;',
+        '}',
+  
+        '.nesp-help-action, .nesp-help-chat-btn{',
+        'display:flex;',
+        'align-items:center;',
+        'justify-content:center;',
+        'width:100%;',
+        'min-height:44px;',
+        'margin:8px 0 0;',
+        'padding:12px 14px;',
+        'border-radius:999px;',
+        'text-decoration:none;',
+        'font-size:14px;',
+        'line-height:1.2;',
+        'box-sizing:border-box;',
+        'cursor:pointer;',
+        'transition:transform .12s ease, box-shadow .12s ease, background .12s ease;',
+        '}',
+  
+        '.nesp-help-action{',
+        'background:#f7f5f2;',
+        'border:1px solid #e5dfd7;',
+        'color:#1f1f1f;',
+        '}',
+  
+        '.nesp-help-action:hover, .nesp-help-chat-btn:hover, #nesp-help-launcher:hover{',
+        'transform:translateY(-1px);',
+        '}',
+  
+        '.nesp-help-chat-btn{',
+        'background:#111;',
+        'border:1px solid #111;',
+        'color:#fff;',
+        '}',
+  
+        '#nesp-help-launcher{',
+        'display:inline-flex;',
+        'align-items:center;',
+        'justify-content:center;',
+        'min-height:48px;',
+        'padding:0 18px;',
+        'border-radius:999px;',
+        'border:1px solid #111;',
+        'background:#111;',
+        'color:#fff;',
+        'font-size:14px;',
+        'font-weight:700;',
+        'cursor:pointer;',
+        'box-shadow:0 8px 22px rgba(0,0,0,.18);',
+        'transition:transform .12s ease, box-shadow .12s ease;',
+        '}',
+  
+        '#nesp-help-launcher:focus-visible, .nesp-help-chat-btn:focus-visible, .nesp-help-action:focus-visible{',
+        'outline:2px solid #4d90fe;',
+        'outline-offset:2px;',
+        '}'
+      ].join('');
+      document.head.appendChild(style);
+    }
+  
+    function buildMarkup() {
+      if (document.getElementById(CONFIG.selectors.mountId)) {
+        return document.getElementById(CONFIG.selectors.mountId);
+      }
+  
+      var root = document.createElement('div');
+      root.id = CONFIG.selectors.mountId;
+  
+      root.innerHTML = [
+        '<div id="' + CONFIG.selectors.panelId + '" aria-hidden="true">',
+          '<div id="nesp-help-heading">' + escapeHtml(CONFIG.labels.heading) + '</div>',
+  
+          '<a class="nesp-help-action" href="' + escapeAttribute(CONFIG.links.faq) + '" target="_blank" rel="noopener noreferrer">',
+            escapeHtml(CONFIG.labels.faq),
+          '</a>',
+  
+          '<a class="nesp-help-action" href="' + escapeAttribute(CONFIG.links.promo) + '" target="_blank" rel="noopener noreferrer">',
+            escapeHtml(CONFIG.labels.promo),
+          '</a>',
+  
+          '<a class="nesp-help-action" href="tel:' + escapeAttribute(CONFIG.links.phone) + '">',
+            escapeHtml(CONFIG.labels.phone),
+          '</a>',
+  
+          '<button id="' + CONFIG.selectors.chatButtonId + '" class="nesp-help-chat-btn" type="button">',
+            escapeHtml(CONFIG.labels.chat),
+          '</button>',
+        '</div>',
+  
+        '<button id="' + CONFIG.selectors.launcherId + '" type="button" aria-expanded="false" aria-controls="' + CONFIG.selectors.panelId + '">',
+          escapeHtml(CONFIG.labels.launcher),
+        '</button>'
+      ].join('');
+  
+      document.body.appendChild(root);
+      return root;
+    }
+  
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+  
+    function escapeAttribute(value) {
+      return String(value).replace(/"/g, '&quot;');
+    }
+  
+    function initQuiq() {
+      if (typeof window.Quiq !== 'function') {
+        console.error('[Nespresso Launcher] Quiq is not available on window.');
+        return null;
+      }
+  
+      try {
+        window.chat = window.Quiq({
+          pageConfigurationId: CONFIG.pageConfigurationId,
+          elementId: CONFIG.selectors.chatButtonId
+        });
+        return window.chat;
+      } catch (err) {
+        console.error('[Nespresso Launcher] Failed to initialize Quiq:', err);
+        return null;
+      }
+    }
+  
+    function bindUI(root) {
+      var panel = root.querySelector('#' + CONFIG.selectors.panelId);
+      var launcher = root.querySelector('#' + CONFIG.selectors.launcherId);
+      var chatButton = root.querySelector('#' + CONFIG.selectors.chatButtonId);
+  
+      if (!panel || !launcher || !chatButton) {
+        console.error('[Nespresso Launcher] Missing required UI elements.');
+        return;
+      }
+  
+      function openPanel() {
+        panel.classList.add('is-open');
+        panel.setAttribute('aria-hidden', 'false');
+        launcher.setAttribute('aria-expanded', 'true');
+      }
+  
+      function closePanel() {
+        panel.classList.remove('is-open');
+        panel.setAttribute('aria-hidden', 'true');
+        launcher.setAttribute('aria-expanded', 'false');
+      }
+  
+      function togglePanel() {
+        if (panel.classList.contains('is-open')) {
+          closePanel();
+        } else {
+          openPanel();
+        }
+      }
+  
+      launcher.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        togglePanel();
+      });
+  
+      chatButton.addEventListener('click', function () {
+        closePanel();
+      });
+  
+      document.addEventListener('click', function (event) {
+        if (!root.contains(event.target)) {
+          closePanel();
+        }
+      });
+  
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          closePanel();
+        }
+      });
+    }
+  
+    ready(function () {
+      injectStyles();
+      var root = buildMarkup();
+  
+      loadScript(CONFIG.quiqScriptSrc, function () {
+        initQuiq();
+        bindUI(root);
+      });
+    });
+  })();
 </script>
 
-<!-- <script src="nespresso-help-launcher.js" defer></script> -->
+</body>
+</html>
