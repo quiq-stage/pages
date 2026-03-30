@@ -1,32 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Nespresso</title>
-</head>
-<body>
-
-  <style>
-    @font-face {
-      font-family: "NespressoLucas";
-      src: url("./NespressoLucas-Regular.woff2") format("woff2");
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
-    }
-    
-    @font-face {
-      font-family: "NespressoLucas";
-      src: url("./NespressoLucas-Bold.woff2") format("woff2");
-      font-weight: 700;
-      font-style: normal;
-      font-display: swap;
-    }
-
-    body  {  font-family: "NespressoLucas";  }
-    
-  </style>
-  
-  <script src="nespresso.js" charset="UTF-8"></script>
-
-</body>
-</html>
+<script src="nespresso-help-launcher.js" defer></script>
+<script src="https://dixie.quiq-api.com/app/chat-ui/index.js" charset="UTF-8"></script>
+<script>
+  var chat = Quiq({
+    pageConfigurationId: 'nespresso'
+  });
+</script>
