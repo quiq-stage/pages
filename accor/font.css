@@ -2,6 +2,6 @@
     font-family: "GT America LV Standard Light";
     font-style: normal;
     font-weight: 400;
-    src: url(https://quiq-stage.github.io/pages/accor/GT-America-LV-Standard-Light.woff2) format("woff2");
+    src: url("https://quiq-stage.github.io/pages/accor/GT-America-LV-Standard-Light.woff2") format("woff2");
     font-display: swap;
 }
