@@ -1,9 +1,15 @@
 @font-face {
-    font-family: "GTAmericaLV-Light";
-    src: url("https://quiq-stage.github.io/pages/accor/GT-America-LV-Standard-Light.woff2") format("woff2");
+    font-family: "GTAmericaLV";
+    src: url("GT-America-LV-Standard-Light.woff2") format("woff2");
+    font-weight: 300; /* Light */
 }
-
 @font-face {
-    font-family: "GTAmericaLV-UltraLight";
-    src: url("https://quiq-stage.github.io/pages/accor/GT-America-LV-Standard-Light.woff2") format("woff2");
+    font-family: "GTAmericaLV";
+    src: url("GT-America-LV-Standard-Ultra-Light.woff2") format("woff2");
+    font-weight: 200; /* UltraLight */
+}
+@font-face {
+    font-family: "GTAmericaLV";
+    src: url("GT-America-LV-Standard-Bold.woff2") format("woff2");
+    font-weight: 700; /* Bold */
 }
