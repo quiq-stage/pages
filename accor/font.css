@@ -13,3 +13,10 @@
     src: url("https://quiq-stage.github.io/pages/accor/GT-America-LV-Standard-Bold.woff2") format("woff2");
     font-weight: 700; /* Bold */
 }
+@font-face {
+	font-family: 'Decimal Light';
+	src: url('https://quiq-stage.github.io/pages/accor/fonts/decimal-light.woff2') format('woff2');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
