@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us Boxes - OppFi Test</title>
+  </head>
+  <body>
+    <style>
+      body {
+        font-family: sans-serif;
+        background: #f2f2f2;
+      }
+      h1 {
+        color: #333;
+      }
+    </style>
+
+    <h1>OppFi Contact Us Boxes - Test Page</h1>
+    <p>Tenant: oppfi | Channels: Apple Business Chat, Web Chat | Convo Starter ID: customer-support</p>
+
+    <script src="quiq-contact-boxes.umd.js"></script>
+    <script defer>
+      window.QuiqContactUs.configure({
+        channels: {
+          webchat: {
+            tenant: 'oppfi',
+            options: { pageConfigurationId: 'customer-support' },
+            buttonLabel: 'Web Chat',
+          },
+          abc: {
+            appleBusinessId: 'e1393257-e990-405a-abd1-0ab217c51e9b',
+            buttonLabel: 'Apple Business Chat',
+          },
+        },
+        order: ['abc', 'webchat'],
+      })
+
+      window.QuiqContactUs.render()
+    </script>
+  </body>
+</html>
