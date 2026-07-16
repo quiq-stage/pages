@@ -37,6 +37,17 @@
       })
 
       window.QuiqContactUs.render()
+
+      // Match OppFi's prod web chat launcher icon
+      var mainButton = document.getElementById('QuiqContactUsButton')
+      mainButton.innerHTML = ''
+      mainButton.style.backgroundColor = 'transparent'
+      mainButton.style.boxShadow = 'none'
+      var icon = document.createElement('img')
+      icon.src = 'https://proservices-static-prod.quiq-cdn.com/shared/oppfi/chatbot-icon-final.png'
+      icon.style.width = '60px'
+      icon.style.height = '60px'
+      mainButton.appendChild(icon)
     </script>
   </body>
 </html>
