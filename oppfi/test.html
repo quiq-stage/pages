@@ -19,7 +19,7 @@
     <h1>OppFi Contact Us Boxes - Test Page</h1>
     <p>Tenant: oppfi | Channels: Apple Business Chat, Web Chat | Convo Starter ID: customer-support</p>
 
-    <script src="quiq-contact-boxes.umd.js"></script>
+    <script src="https://static.quiq-cdn.com/quiq-contact-us-boxes/index2.0.js"></script>
     <script defer>
       window.QuiqContactUs.configure({
         channels: {
@@ -38,7 +38,7 @@
 
       window.QuiqContactUs.render()
 
-      // Match OppFi's prod web chat launcher icon
+      // Match existing web chat launcher icon
       var mainButton = document.getElementById('QuiqContactUsButton')
       mainButton.innerHTML = ''
       mainButton.style.backgroundColor = 'transparent'
