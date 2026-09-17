@@ -70,7 +70,17 @@
     + '  pointer-events: none; transition: opacity .18s ease, transform .18s ease;'
     + '}'
     + '#qs-menu.qs-open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }'
-    + '#qs-menu-header { background: var(--qs-primary); color: var(--qs-on-primary); padding: 28px 60px 24px 28px; position: relative; }'
+    /* box-shadow (not border) extends the header's own color 1px past its
+       layout edge without taking up space — masks a hairline seam that
+       otherwise shows the white body peeking through. Caused by the header's
+       height coming out to a fractional pixel value (padding + the title's
+       font-metric-driven line height rarely sum to a whole number), which
+       Chrome can round differently between layout and paint, worse still
+       during the popup's open/close scale transition. */
+    + '#qs-menu-header {'
+    + '  background: var(--qs-primary); color: var(--qs-on-primary); padding: 28px 60px 24px 28px;'
+    + '  position: relative; box-shadow: 0 1px 0 0 var(--qs-primary);'
+    + '}'
     + '#qs-menu-header h1 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -.01em; line-height: 1.3; }'
     + '#qs-menu-close {'
     + '  position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; display: flex;'
@@ -103,6 +113,13 @@
     + '.qs-option-text .qs-sub { display: block; font-size: 13px; color: #78787d; margin-top: 3px; line-height: 1.4; }'
     + '.qs-chevron { flex-shrink: 0; width: 18px; height: 18px; color: #b4b4b8; }'
     + '.qs-chevron svg { width: 100%; height: 100%; fill: currentColor; }'
+
+    /* Hide the real chat window until the SDK reports it's actually initialized
+       (see waitForChatReady) — otherwise there's a visible moment where the
+       iframe is up but blank/unstyled while its own app boots. Once revealed
+       (qs-ready), it stays revealed; we don't want it to flash hidden again on
+       every subsequent open, only the very first time it loads. */
+    + '.quiq-webchat-sdk:not(.qs-ready) { opacity: 0 !important; pointer-events: none !important; }'
 
     /* Quiq's SDK also auto-renders its own default floating launcher for this widget
        (a `.quiq-togglechatbutton-button` inside `.quiq-floating-element`) even though
@@ -209,6 +226,35 @@
     document.body.appendChild(holder.firstElementChild);
   }
 
+  // Polls the SDK's own state (rather than the iframe's `load` event, which
+  // fires before the app inside has actually finished booting/theming) until
+  // the widget reports itself initialized, then reveals it. Cheap and safe to
+  // call on every open — resolves near-instantly once already initialized.
+  var chatRevealed = false;
+  function revealChatWhenReady() {
+    if (chatRevealed) return;
+    var attempts = 0;
+    var interval = setInterval(function () {
+      attempts++;
+      var wrapper = document.querySelector('.quiq-webchat-sdk');
+      window.chat.getState().then(function (state) {
+        var webchat = state.webchats && state.webchats[PAGE_CONFIGURATION_ID];
+        var ready = webchat && webchat.status === 'webchatStatusAppInitialized';
+        if (ready && wrapper) {
+          chatRevealed = true;
+          wrapper.classList.add('qs-ready');
+          clearInterval(interval);
+        } else if (attempts > 100) {
+          // ~10s safety valve - reveal anyway rather than hide it forever
+          // if something about the ready-state check doesn't pan out.
+          chatRevealed = true;
+          if (wrapper) wrapper.classList.add('qs-ready');
+          clearInterval(interval);
+        }
+      });
+    }, 100);
+  }
+
   function wireEvents() {
     var qsMenu = document.getElementById('qs-menu');
 
@@ -247,6 +293,7 @@
       closeMenu();
       window.chat.show();
       isChatOpen = true;
+      revealChatWhenReady();
     });
 
     // Placeholder links not yet wired to a real destination for this tenant.
