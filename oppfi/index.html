@@ -21,23 +21,30 @@
 
     <script src="https://static.quiq-cdn.com/quiq-contact-us-boxes/index2.0.js"></script>
     <script defer>
+      // Build your intent value
+      const intentValue = `action=support&productId=ABC123&userId=user456&source=website`;
+      
       window.QuiqContactUs.configure({
         channels: {
           webchat: {
             tenant: 'oppfi',
-            options: { pageConfigurationId: 'customer-support' },
+            options: { 
+              pageConfigurationId: 'customer-support',
+              context: {
+                intent: intentValue
+              }
+            },
             buttonLabel: 'Stay in web chat',
           },
           abc: {
             appleBusinessId: 'e1393257-e990-405a-abd1-0ab217c51e9b',
             buttonLabel: 'Switch to Apple Messages',
+            intent: intentValue  // May also need to be set here for ABC
           },
         },
         order: ['webchat','abc'],
       })
-
       window.QuiqContactUs.render()
-
       // Match existing web chat launcher icon
       var mainButton = document.getElementById('QuiqContactUsButton')
       mainButton.innerHTML = ''
