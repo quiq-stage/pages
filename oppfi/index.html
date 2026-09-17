@@ -39,13 +39,12 @@
           abc: {
             appleBusinessId: 'e1393257-e990-405a-abd1-0ab217c51e9b',
             buttonLabel: 'Switch to Apple Messages',
-            intent: intentValue  // Add intent here for Apple Messages
           },
         },
         order: ['webchat','abc'],
       })
       window.QuiqContactUs.render()
-
+      
       // Modify the ABC button links after render
       setTimeout(() => {
         const abcButton = document.getElementById('abcButton');
@@ -55,20 +54,23 @@
           // Get the inner <a> tag (inside the Apple SVG)
           const innerLink = abcButton.querySelector('a');
           
+          // Encode the entire intent value
+          const encodedIntent = encodeURIComponent(intentValue);
+          
           if (parentLink && parentLink.tagName === 'A') {
             const currentHref = parentLink.getAttribute('href');
-            const newHref = currentHref + '?biz-intent-id=' + encodeURIComponent(intentValue);
+            const newHref = currentHref + '?biz-intent-id=' + encodedIntent;
             parentLink.setAttribute('href', newHref);
           }
           
           if (innerLink) {
             const currentHref = innerLink.getAttribute('href');
-            const newHref = currentHref + '?biz-intent-id=' + encodeURIComponent(intentValue);
+            const newHref = currentHref + '?biz-intent-id=' + encodedIntent;
             innerLink.setAttribute('href', newHref);
           }
         }
       }, 500);
-
+      
       // Match existing web chat launcher icon
       var mainButton = document.getElementById('QuiqContactUsButton')
       mainButton.innerHTML = ''
