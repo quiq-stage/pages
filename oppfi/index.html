@@ -46,15 +46,28 @@
       })
       window.QuiqContactUs.render()
 
-      // Modify the ABC button link after render
+      // Modify the ABC button links after render
       setTimeout(() => {
         const abcButton = document.getElementById('abcButton');
-        if (abcButton && abcButton.querySelector('a')) {
-          const link = abcButton.querySelector('a');
-          const currentHref = link.getAttribute('href');
-          link.setAttribute('href', currentHref + '&biz-intent-id=' + encodeURIComponent(intentValue));
+        if (abcButton) {
+          // Get the parent <a> tag (wraps the whole button)
+          const parentLink = abcButton.parentElement;
+          // Get the inner <a> tag (inside the Apple SVG)
+          const innerLink = abcButton.querySelector('a');
+          
+          if (parentLink && parentLink.tagName === 'A') {
+            const currentHref = parentLink.getAttribute('href');
+            const newHref = currentHref + '?biz-intent-id=' + encodeURIComponent(intentValue);
+            parentLink.setAttribute('href', newHref);
+          }
+          
+          if (innerLink) {
+            const currentHref = innerLink.getAttribute('href');
+            const newHref = currentHref + '?biz-intent-id=' + encodeURIComponent(intentValue);
+            innerLink.setAttribute('href', newHref);
+          }
         }
-      }, 100);
+      }, 500);
 
       // Match existing web chat launcher icon
       var mainButton = document.getElementById('QuiqContactUsButton')
