@@ -45,6 +45,17 @@
         order: ['webchat','abc'],
       })
       window.QuiqContactUs.render()
+
+      // Modify the ABC button link after render
+      setTimeout(() => {
+        const abcButton = document.getElementById('abcButton');
+        if (abcButton && abcButton.querySelector('a')) {
+          const link = abcButton.querySelector('a');
+          const currentHref = link.getAttribute('href');
+          link.setAttribute('href', currentHref + '&biz-intent-id=' + encodeURIComponent(intentValue));
+        }
+      }, 100);
+
       // Match existing web chat launcher icon
       var mainButton = document.getElementById('QuiqContactUsButton')
       mainButton.innerHTML = ''
