@@ -1,1 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nespresso — Coffee, Machines &amp; Accessories</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Demo storefront for the Nespresso AI agent.">
+
+<!-- Quiq chat widget (custom button -> popup -> chat shim; loads the Quiq tag itself) -->
 <script src="nespresso-quiq-chat.js"></script>
+
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --ink-soft:#4a4744;
+    --line:#e2ddd6;
+    --paper:#ffffff;
+    --cream:#f6f3ee;
+    --sand:#efe9e1;
+    --gold:#8d6b43;
+    --gold-lite:#b99160;
+    color-scheme: light;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font:16px/1.6 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    letter-spacing:.01em;
+  }
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:400;letter-spacing:.005em;margin:0}
+  .wrap{max-width:1200px;margin:0 auto;padding-inline:20px}
+  .eyebrow{
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gold);margin:0 0 14px
+  }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-block;border:1px solid var(--ink);background:var(--ink);color:#fff;
+    padding:13px 30px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    cursor:pointer;transition:background .18s ease,color .18s ease;font-family:inherit
+  }
+  .btn:hover{background:transparent;color:var(--ink)}
+  .btn--ghost{background:transparent;color:var(--ink)}
+  .btn--ghost:hover{background:var(--ink);color:#fff}
+  .btn--light{border-color:#fff;background:#fff;color:var(--ink)}
+  .btn--light:hover{background:transparent;color:#fff}
+  .btn--outline-light{border-color:rgba(255,255,255,.7);background:transparent;color:#fff}
+  .btn--outline-light:hover{background:#fff;color:var(--ink)}
+
+  /* ---------- header ---------- */
+  .utility{
+    background:var(--cream);border-bottom:1px solid var(--line);
+    font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft)
+  }
+  .utility .wrap{display:flex;gap:22px;align-items:center;justify-content:flex-end;
+    min-height:34px;flex-wrap:wrap;padding-block:7px}
+  .utility .promo{margin-right:auto;color:var(--ink)}
+  .utility a:hover{color:var(--gold)}
+
+  header.site{position:sticky;top:0;z-index:40;background:var(--ink);color:#fff}
+  header.site .wrap{display:flex;align-items:center;gap:28px;min-height:70px}
+  .brand{
+    font-family:Georgia,serif;font-size:21px;letter-spacing:.34em;
+    text-transform:uppercase;white-space:nowrap
+  }
+  nav.main{display:flex;gap:26px;flex-wrap:wrap;margin-left:6px}
+  nav.main a{
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#e9e5df;
+    padding:6px 0;border-bottom:1px solid transparent
+  }
+  nav.main a:hover{color:#fff;border-bottom-color:var(--gold-lite)}
+  .icons{margin-left:auto;display:flex;gap:18px;align-items:center;color:#e9e5df}
+  .icons button{
+    background:none;border:0;color:inherit;cursor:pointer;padding:4px;
+    display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:12px;letter-spacing:.1em
+  }
+  .icons button:hover{color:#fff}
+  .icons svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.4}
+  .cart-count{
+    background:var(--gold-lite);color:#1a1207;border-radius:999px;
+    font-size:10px;line-height:1;padding:3px 6px;letter-spacing:0
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    display:grid;grid-template-columns:1.05fr 1fr;background:#120f0c;color:#fff;
+    min-height:clamp(420px,46vw,560px)
+  }
+  .hero-panel{
+    position:relative;display:flex;align-items:center;overflow:hidden;
+    background:linear-gradient(150deg,#2a1e14 0%,#120f0c 70%)
+  }
+  .hero-panel::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(760px 520px at 18% 30%, rgba(185,145,96,.26), transparent 66%)
+  }
+  .hero-panel .inner{position:relative;z-index:2;padding:64px clamp(24px,5vw,68px);max-width:600px;margin-left:auto}
+  .hero h1{font-size:clamp(34px,4vw,54px);line-height:1.1;margin-bottom:18px}
+  .hero p{color:#e4dcd1;font-size:17px;max-width:42ch;margin:0 0 30px}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-media{position:relative;overflow:hidden;background:#1a1410}
+  .hero-media img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transform:scale(1.58);transform-origin:50% 82%
+  }
+
+
+  /* ---------- sections ---------- */
+  section{padding-block:76px}
+  .section-head{max-width:640px;margin-bottom:40px}
+  .section-head h2{font-size:clamp(26px,3.4vw,38px);margin-bottom:12px}
+  .section-head p{color:var(--ink-soft);margin:0}
+
+  /* ---------- range split ---------- */
+  .ranges{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+  .range{
+    position:relative;min-height:320px;padding:40px;display:flex;flex-direction:column;
+    justify-content:flex-end;color:#fff;overflow:hidden
+  }
+  .range.vertuo{background:linear-gradient(145deg,#3b2a5c,#1b1330)}
+  .range.original{background:linear-gradient(145deg,#6d1f2a,#2a0f14)}
+  .range::after{
+    content:"";position:absolute;right:-40px;top:-40px;width:230px;height:230px;border-radius:50%;
+    background:rgba(255,255,255,.07)
+  }
+  .range h3{font-size:30px;margin-bottom:8px;position:relative}
+  .range p{color:rgba(255,255,255,.8);margin:0 0 22px;max-width:34ch;position:relative}
+  .range .btn{position:relative;align-self:flex-start}
+
+  /* ---------- capsules ---------- */
+  .capsule-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:26px 20px
+  }
+  .capsule-card{
+    border:1px solid var(--line);background:var(--paper);padding:26px 20px 22px;
+    display:flex;flex-direction:column;text-align:center;transition:box-shadow .2s ease,transform .2s ease
+  }
+  .capsule-card:hover{box-shadow:0 14px 34px rgba(20,12,4,.11);transform:translateY(-3px)}
+  .pod{
+    width:100%;height:auto;aspect-ratio:1;margin:0 auto 10px;display:block;
+    object-fit:contain;mix-blend-mode:multiply
+  }
+
+  .capsule-card h3{font-size:19px;margin-bottom:4px}
+  .capsule-card .kind{
+    font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px
+  }
+  .intensity{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:14px}
+  .bars{display:flex;gap:2px}
+  .bars i{width:4px;height:13px;background:var(--sand);display:block}
+  .bars i.on{background:var(--ink)}
+  .intensity span{font-size:11px;letter-spacing:.1em;color:var(--ink-soft);text-transform:uppercase}
+  .price{font-size:14px;margin-bottom:16px}
+  .price small{color:var(--ink-soft)}
+  .capsule-card .btn{margin-top:auto;padding:11px 18px;font-size:11px}
+
+  /* ---------- machines ---------- */
+  .machines{background:var(--cream)}
+  .machine-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+  .machine{background:var(--paper);border:1px solid var(--line);padding:30px;text-align:center}
+  .machine img{width:100%;height:auto;max-width:200px;aspect-ratio:1;object-fit:contain;margin:0 auto 10px;display:block;mix-blend-mode:multiply}
+  .machine h3{font-size:21px;margin-bottom:6px}
+  .machine p{color:var(--ink-soft);font-size:14px;margin:0 0 16px;min-height:44px}
+  .machine .price{font-size:17px;margin-bottom:18px}
+
+  /* ---------- services ---------- */
+  .service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:34px}
+  .service{border-top:2px solid var(--ink);padding-top:20px}
+  .service h3{font-size:19px;margin-bottom:8px}
+  .service p{color:var(--ink-soft);font-size:15px;margin:0 0 12px}
+  .service a{font-size:12px;letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid var(--gold-lite);padding-bottom:3px}
+
+  /* ---------- support / chat band ---------- */
+  .support{background:var(--ink);color:#fff;text-align:center}
+  .support h2{font-size:clamp(26px,3.4vw,36px);margin-bottom:14px}
+  .support p{color:#cfc7bd;max-width:52ch;margin:0 auto 28px}
+
+  /* ---------- footer ---------- */
+  footer{background:#0a0a0a;color:#bdb6ad;font-size:14px;padding-block:58px 34px}
+  .foot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:34px;margin-bottom:44px}
+  footer h4{
+    color:#fff;font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin:0 0 16px;font-weight:600
+  }
+  footer ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  footer a:hover{color:#fff}
+  .foot-bottom{
+    border-top:1px solid #241f1a;padding-top:22px;display:flex;gap:16px;flex-wrap:wrap;
+    justify-content:space-between;font-size:12px;color:#7d766e
+  }
+  .demo-note{
+    margin-top:18px;font-size:11px;letter-spacing:.06em;color:#6a645d
+  }
+
+  @media (max-width:860px){
+    nav.main{display:none}
+    .hero{grid-template-columns:1fr}
+    .hero-panel .inner{margin-left:0;padding-block:52px}
+    .hero-media{min-height:280px;order:-1}
+    section{padding-block:56px}
+  }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <div class="wrap">
+    <span class="promo">Complimentary delivery on orders over $75</span>
+    <a href="#">Find a Boutique</a>
+    <a href="#">Recycling</a>
+    <a href="#">Sign In</a>
+  </div>
+</div>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#">Nespresso</a>
+    <nav class="main">
+      <a href="#coffee">Coffee</a>
+      <a href="#machines">Machines</a>
+      <a href="#">Accessories</a>
+      <a href="#services">Services</a>
+      <a href="#">Sustainability</a>
+    </nav>
+    <div class="icons">
+      <button type="button" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
+      </button>
+      <button type="button" aria-label="Account">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>
+      </button>
+      <button type="button" aria-label="Cart">
+        <svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="cart-count">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-panel">
+    <div class="inner">
+      <p class="eyebrow">New — Samra Origins</p>
+      <h1>Coffee with a place to call home.</h1>
+      <p>Single-origin capsules grown at altitude in Ethiopia's Samra highlands — roasted to bring out what the soil gave them.</p>
+      <div class="hero-actions">
+        <a class="btn btn--light" href="#coffee">Shop coffee</a>
+        <a class="btn btn--outline-light" href="#machines">Explore machines</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-media">
+    <img src="img/hero.jpg" alt="A Vertuo Pop machine brewing a coffee alongside a sleeve of Samra Origins capsules" width="952" height="912">
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="ranges">
+      <div class="range vertuo">
+        <h3>Vertuo</h3>
+        <p>Five cup sizes, from a 40&nbsp;ml espresso to a 414&nbsp;ml alto — each capsule barcode-read and brewed by centrifusion.</p>
+        <a class="btn btn--light" href="#coffee">Discover Vertuo</a>
+      </div>
+      <div class="range original">
+        <h3>Original</h3>
+        <p>The classic high-pressure extraction. Espresso and lungo, with the widest range of blends and intensities.</p>
+        <a class="btn btn--light" href="#coffee">Discover Original</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="coffee">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Coffee</p>
+      <h2>Best sellers this week</h2>
+      <p>Sleeves of 10 capsules. Free delivery over $75, and every used capsule is recyclable through our program.</p>
+    </div>
+    <div class="capsule-grid" id="capsuleGrid"></div>
+  </div>
+</section>
+
+<section class="machines" id="machines">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Machines</p>
+      <h2>Made to sit on a countertop for years</h2>
+      <p>Every machine ships with a welcome set of capsules and a two-year warranty.</p>
+    </div>
+    <div class="machine-grid" id="machineGrid"></div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Services</p>
+      <h2>We stay with the machine after you buy it</h2>
+    </div>
+    <div class="service-grid">
+      <div class="service">
+        <h3>Coffee subscriptions</h3>
+        <p>Choose your blends and cadence. Skip, swap or pause any delivery before it ships.</p>
+        <a href="#">Set up a plan</a>
+      </div>
+      <div class="service">
+        <h3>Machine assistance</h3>
+        <p>Descaling, blinking lights, weak crema — walk through it with us and we'll arrange a repair if it needs one.</p>
+        <a href="#">Get help</a>
+      </div>
+      <div class="service">
+        <h3>Recycling</h3>
+        <p>Prepaid bags, boutique drop-off and curbside pickup in select cities. The aluminum comes back.</p>
+        <a href="#">How it works</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="support">
+  <div class="wrap">
+    <p class="eyebrow">Support</p>
+    <h2>Questions about your machine?</h2>
+    <p>Our coffee assistant is here around the clock — troubleshooting, orders, subscriptions and recycling.</p>
+    <button class="btn btn--light" type="button" id="openChat">Chat with us</button>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#coffee">Vertuo coffee</a></li>
+          <li><a href="#coffee">Original coffee</a></li>
+          <li><a href="#machines">Machines</a></li>
+          <li><a href="#">Accessories</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">Subscriptions</a></li>
+          <li><a href="#services">Machine assistance</a></li>
+          <li><a href="#services">Recycling</a></li>
+          <li><a href="#">Order tracking</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>About</h4>
+        <ul>
+          <li><a href="#">Our story</a></li>
+          <li><a href="#">Sustainability</a></li>
+          <li><a href="#">Boutiques</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#">Help center</a></li>
+          <li><a href="#">1-800-000-0000</a></li>
+          <li><a href="#">Returns</a></li>
+          <li><a href="#">Warranty</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>&copy; 2026 — demo storefront</span>
+      <span>Privacy · Terms · Accessibility</span>
+    </div>
+    <p class="demo-note">Internal demo page. Not affiliated with or endorsed by Nespresso; product names, prices and copy are illustrative.</p>
+  </div>
+</footer>
+
+<script>
+  /* ---- storefront content (kept in one place so it's easy to retheme) ---- */
+  var CAPSULES = [
+    { name: 'Altissio',            kind: 'Vertuo · Espresso',   intensity: 9,  price: '11.00', img: 'capsule-altissio.png' },
+    { name: 'Diavolitto',          kind: 'Vertuo · Espresso',   intensity: 11, price: '11.00', img: 'capsule-diavolitto.png' },
+    { name: 'Stormio',             kind: 'Vertuo · Coffee',     intensity: 8,  price: '11.00', img: 'capsule-stormio.png' },
+    { name: 'Odacio',              kind: 'Vertuo · Coffee',     intensity: 7,  price: '11.00', img: 'capsule-odacio.png' },
+    { name: 'Melozio',             kind: 'Vertuo · Coffee',     intensity: 6,  price: '11.00', img: 'capsule-melozio.png' },
+    { name: 'Intenso',             kind: 'Vertuo · Coffee',     intensity: 9,  price: '11.00', img: 'capsule-intenso.png' },
+    { name: 'Ispirazione Firenze', kind: 'Original · Arpeggio', intensity: 9,  price: '9.50',  img: 'capsule-firenze.png' },
+    { name: 'Capriccio',           kind: 'Original · Espresso', intensity: 5,  price: '9.50',  img: 'capsule-capriccio.png' }
+  ];
+
+  var MACHINES = [
+    { name: 'Vertuo Next',    blurb: 'Five cup sizes, one-touch brewing, 54% recycled plastic.',      price: '179', img: 'machine-vertuo-next.png' },
+    { name: 'Gran Lattissima', blurb: 'Nine one-touch milk recipes with an automatic milk carafe.',   price: '649', img: 'machine-gran-lattissima.png' },
+    { name: 'Essenza Mini',   blurb: 'The smallest machine we make — espresso and lungo, nothing else.', price: '149', img: 'machine-essenza-mini.png' }
+  ];
+
+  function bars(n) {
+    var out = '';
+    for (var i = 1; i <= 13; i++) out += '<i class="' + (i <= n ? 'on' : '') + '"></i>';
+    return out;
+  }
+
+  document.getElementById('capsuleGrid').innerHTML = CAPSULES.map(function (c) {
+    return '' +
+      '<article class="capsule-card">' +
+        '<img class="pod" src="img/' + c.img + '" alt="' + c.name + ' capsule" width="600" height="600" loading="lazy">' +
+        '<h3>' + c.name + '</h3>' +
+        '<p class="kind">' + c.kind + '</p>' +
+        '<div class="intensity"><span>Intensity</span><span class="bars">' + bars(c.intensity) + '</span><span>' + c.intensity + '</span></div>' +
+        '<p class="price">$' + c.price + ' <small>/ sleeve of 10</small></p>' +
+        '<button class="btn btn--ghost" type="button">Add to cart</button>' +
+      '</article>';
+  }).join('');
+
+  document.getElementById('machineGrid').innerHTML = MACHINES.map(function (m) {
+    return '' +
+      '<article class="machine">' +
+        '<img src="img/' + m.img + '" alt="' + m.name + ' machine" width="600" height="600" loading="lazy">' +
+        '<h3>' + m.name + '</h3>' +
+        '<p>' + m.blurb + '</p>' +
+        '<p class="price">$' + m.price + '</p>' +
+        '<button class="btn" type="button">Add to cart</button>' +
+      '</article>';
+  }).join('');
+
+  /* "Chat with us" — routes into the same custom launcher/popup the floating
+     button uses, rather than trying to open the Quiq widget directly, so both
+     entry points on the page behave consistently. */
+  document.getElementById('openChat').addEventListener('click', function () {
+    var launcher = document.getElementById('qs-launcher');
+    if (launcher) launcher.click();
+  });
+</script>
+
+</body>
+</html>
