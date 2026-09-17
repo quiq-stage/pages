@@ -212,20 +212,41 @@
   function wireEvents() {
     var qsMenu = document.getElementById('qs-menu');
 
-    function toggleMenu() {
-      qsMenu.classList.toggle('qs-open');
+    // Tracks whether WE last opened the real Quiq window, so only one of
+    // {popup, chat window} is ever showing at a time. If the end user closes
+    // the chat window some other way (its own X button), this flag goes
+    // stale, but that's harmless here: hide() on an already-closed window is
+    // a no-op, so the launcher still does the right thing (opens the popup).
+    var isChatOpen = false;
+
+    function closeMenu() {
+      qsMenu.classList.remove('qs-open');
     }
 
-    document.getElementById('qs-launcher').addEventListener('click', toggleMenu);
-    document.getElementById('qs-menu-close').addEventListener('click', toggleMenu);
+    document.getElementById('qs-launcher').addEventListener('click', function () {
+      if (qsMenu.classList.contains('qs-open')) {
+        // Popup is showing -> this closes everything.
+        closeMenu();
+        return;
+      }
+      if (isChatOpen) {
+        // Chat window is showing -> swap it for the popup.
+        window.chat.hide();
+        isChatOpen = false;
+      }
+      qsMenu.classList.add('qs-open');
+    });
+
+    document.getElementById('qs-menu-close').addEventListener('click', closeMenu);
 
     // Real trigger: close our fake menu and open the actual Quiq widget via the
     // SDK. `window.chat` is assigned once the Quiq tag has loaded and initialized
     // below; a user can't reach this click before that's done since it's nested
     // behind opening the menu first.
     document.getElementById('qs-chat-option').addEventListener('click', function () {
-      qsMenu.classList.remove('qs-open');
+      closeMenu();
       window.chat.show();
+      isChatOpen = true;
     });
 
     // Placeholder links not yet wired to a real destination for this tenant.
