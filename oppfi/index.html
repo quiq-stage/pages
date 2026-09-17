@@ -21,7 +21,7 @@
 
     <script src="https://static.quiq-cdn.com/quiq-contact-us-boxes/index2.0.js"></script>
     <script defer>
-      // Build your intent value
+      // Build your intent value with concatenated data
       const intentValue = `action=support&productId=ABC123&userId=user456&source=website`;
       
       window.QuiqContactUs.configure({
@@ -39,7 +39,7 @@
           abc: {
             appleBusinessId: 'e1393257-e990-405a-abd1-0ab217c51e9b',
             buttonLabel: 'Switch to Apple Messages',
-            intent: intentValue  // May also need to be set here for ABC
+            intent: intentValue  // Add intent here for Apple Messages
           },
         },
         order: ['webchat','abc'],
@@ -56,5 +56,6 @@
       icon.style.height = '60px'
       mainButton.appendChild(icon)
     </script>
+
   </body>
 </html>
