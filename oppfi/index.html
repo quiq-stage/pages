@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contact Us Boxes - OppFi Test</title>
+    <title>Platform Selector - OppFi Test</title>
   </head>
   <body>
     <style>
@@ -16,75 +16,20 @@
       }
     </style>
 
-    <h1>OppFi Contact Us Boxes - Test Page</h1>
-    <p>Tenant: oppfi-stage | Channels: Apple Business Chat, Web Chat, SMS | Convo Starter ID: customer-support</p>
+    <h1>OppFi Platform Selector - Test Page</h1>
+    <p>Tenant: oppfi-stage | Standard widget code + setContext(intent) | Convo Starter ID: customer-support</p>
 
-    <script src="https://static.quiq-cdn.com/quiq-contact-us-boxes/index2.0.js"></script>
-    <script defer>
+    <script src="https://oppfi-stage.quiq-api.com/app/chat-ui/index.js" charset="UTF-8"></script>
+    <script>
+      var chat = Quiq({
+        pageConfigurationId: 'customer-support'
+      });
+
       // Use a delimiter that won't conflict with URL parameters
-      const intentValue = `action:support|productId:ABC123|userId:user456|source:website`;
-      
-      window.QuiqContactUs.configure({
-        channels: {
-          webchat: {
-            tenant: 'oppfi-stage',
-            options: { 
-              pageConfigurationId: 'customer-support',
-              context: {
-                intent: intentValue
-              }
-            },
-            buttonLabel: 'Stay in web chat',
-          },
-          abc: {
-            appleBusinessId: '43e5876e-ecba-460e-9335-ec1bf0926031',
-            // 'e1393257-e990-405a-abd1-0ab217c51e9b', <-- PROD
-            buttonLabel: 'Switch to Apple Messages',
-          },
-          sms: {
-            phoneNumber: '14066684885',
-            // '18338103081', <-- PROD
-            buttonLabel: 'Switch to Text',
-            modalTitle: 'Text us',
-            modalPrompt: 'Text us at the number below from your phone.',
-          },
-        },
-        order: ['webchat','abc','sms'],
-      })
-      window.QuiqContactUs.render()
-      
-      // Modify the ABC button links after render
-      setTimeout(() => {
-        const abcButton = document.getElementById('abcButton');
-        if (abcButton) {
-          const parentLink = abcButton.parentElement;
-          const innerLink = abcButton.querySelector('a');
-          
-          if (parentLink && parentLink.tagName === 'A') {
-            const currentHref = parentLink.getAttribute('href');
-            const newHref = currentHref + '?biz-intent-id=' + encodeURIComponent(intentValue);
-            parentLink.setAttribute('href', newHref);
-          }
-          
-          if (innerLink) {
-            const currentHref = innerLink.getAttribute('href');
-            const newHref = currentHref + '?biz-intent-id=' + encodeURIComponent(intentValue);
-            innerLink.setAttribute('href', newHref);
-          }
-        }
-      }, 500);
-      
-      // Match existing web chat launcher icon
-      var mainButton = document.getElementById('QuiqContactUsButton')
-      mainButton.innerHTML = ''
-      mainButton.style.backgroundColor = 'transparent'
-      mainButton.style.boxShadow = 'none'
-      var icon = document.createElement('img')
-      icon.src = 'https://proservices-static-prod.quiq-cdn.com/shared/oppfi/chatbot-icon-final.png'
-      icon.style.width = '60px'
-      icon.style.height = '60px'
-      mainButton.appendChild(icon)
-    </script>
+      var intentValue = 'action:support|productId:ABC123|userId:user456|source:website';
 
+      // Set whenever the dynamic value is known, before the user clicks a platform button
+      chat.setContext({ intent: intentValue }, true);
+    </script>
   </body>
 </html>
